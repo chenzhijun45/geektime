@@ -1,6 +1,7 @@
 package com.study.bsecondweek.utils;
 
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -17,16 +18,27 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * 基于JDK实现接口调用
+ */
 @Slf4j
-public class HttpUtil2 {
+public class HttpUtil {
 
     private static final String CHARSET = "UTF-8";
     private static final String HTTP_POST = "POST";
     private static final String HTTP_GET = "GET";
     private static final String HTTP_PUT = "PUT";
+    //请求连接超时时间
+    private static final int connectTimeout = 5000;
+    //数据传输超时时间 请求已经执行 但是耗时较久的请求 这里可以适当调大
+    private static final int transferTimeout = 10000;
 
     private static final SSLSocketFactory sslSocketFactory = initSSLSocketFactory();
     private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new TrustAnyHostnameVerifier();
+
+    public static String get(String url) {
+        return get(url, null, null);
+    }
 
     public static String get(String url, Map<String, String> params) {
         return get(url, params, null);
@@ -49,47 +61,29 @@ public class HttpUtil2 {
         return responseStr;
     }
 
-    public static String post(String url, Map<String, String> params, String data) {
-        return post(url, params, data, null);
+    public static String post(String url, Map<String, Object> params) {
+        return post(url, params, null);
     }
 
-    public static String post(String url, String data, Map<String, String> headers) {
-        return post(url, null, data, headers);
-    }
-
-    public static String post(String url, String data) {
-        return post(url, null, data, null);
-    }
-
-    public static String jsonPost(String url, String data, Map<String, Object> head) {
-        Map<String, String> headers = new HashMap<String, String>();
+    public static String jsonPost(String url, Map<String, Object> params) {
+        Map<String, String> headers = new HashMap<String, String>(1);
         headers.put("Content-Type", "application/json");
-        headers.put("Authorization", head.get("Authorization").toString());
-        return post(url, null, data, headers);
+        return post(url, params, headers);
     }
 
-    public static String jsonPost(String url, Map<String, String> headers, String data) {
-        if (headers == null) {
-            headers = new HashMap<String, String>();
-        }
-
-        headers.put("Content-Type", "application/json");
-        return post(url, null, data, headers);
-    }
-
-    public static String post(String url, Map<String, String> queryParas, String data, Map<String, String> headers) {
+    public static String post(String url, Map<String, Object> params, Map<String, String> headers) {
         HttpURLConnection conn = null;
         String responseStr;
         try {
-            conn = getHttpConnection(buildUrlWithQueryString(url, queryParas), HTTP_POST, headers);
+            conn = getHttpConnection(buildUrlWithQueryString(url, null), HTTP_POST, headers);
             conn.connect();
             OutputStream out = conn.getOutputStream();
-            out.write(data.getBytes(CHARSET));
+            out.write(JSONObject.toJSONString(params).getBytes(CHARSET));
             out.flush();
             out.close();
             responseStr = readResponseString(conn);
         } catch (Exception e) {
-            log.error("POST请求异常 e={}",e);
+            log.error("POST请求异常 e={}", e);
             throw new RuntimeException(e);
         } finally {
             if (conn != null) {
@@ -98,7 +92,6 @@ public class HttpUtil2 {
         }
         return responseStr;
     }
-
 
 
     public static String put(String url, Map<String, String> queryParas, String data, Map<String, String> headers) {
@@ -133,12 +126,12 @@ public class HttpUtil2 {
 
     private static SSLSocketFactory initSSLSocketFactory() {
         try {
-            TrustManager[] tm = new TrustManager[]{new HttpUtil2.TrustAnyTrustManager()};
+            TrustManager[] tm = new TrustManager[]{new HttpUtil.TrustAnyTrustManager()};
             SSLContext sslContext = SSLContext.getInstance("TLS", "SunJSSE");
             sslContext.init((KeyManager[]) null, tm, new SecureRandom());
             return sslContext.getSocketFactory();
-        } catch (Exception var2) {
-            throw new RuntimeException(var2);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -153,8 +146,8 @@ public class HttpUtil2 {
         conn.setRequestMethod(method);
         conn.setDoOutput(true);
         conn.setDoInput(true);
-        conn.setConnectTimeout(30000);
-        conn.setReadTimeout(30000);
+        conn.setConnectTimeout(connectTimeout);
+        conn.setReadTimeout(transferTimeout);
         conn.setUseCaches(false);
         if (headers != null) {
             String contentType = headers.get("Content-Type");
@@ -167,10 +160,10 @@ public class HttpUtil2 {
 
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36");
         if (headers != null && !headers.isEmpty()) {
-            Iterator var6 = headers.entrySet().iterator();
-            while (var6.hasNext()) {
-                Entry<String, String> entry = (Entry) var6.next();
-                conn.setRequestProperty((String) entry.getKey(), (String) entry.getValue());
+            Iterator<Entry<String, String>> iterator = headers.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Entry<String, String> entry = iterator.next();
+                conn.setRequestProperty(entry.getKey(), entry.getValue());
             }
         }
         return conn;

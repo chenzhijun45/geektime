@@ -1,7 +1,5 @@
-package com.test.demo.jvm.GC日志分析;
+package com.study.bsecondweek.gc;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -31,6 +29,8 @@ public class GCLogAnalysis {
 //            list.add(new Object());
 //
 //        }
+
+
     }
 
 
