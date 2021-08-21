@@ -24,7 +24,7 @@ public class PropertiesUtil {
         }
     }
 
-    public static PropertiesUtil getInstance() {
+    private static PropertiesUtil getInstance() {
         if (propertiesUtil == null) {
             synchronized (PropertiesUtil.class) {
                 if (propertiesUtil == null) {

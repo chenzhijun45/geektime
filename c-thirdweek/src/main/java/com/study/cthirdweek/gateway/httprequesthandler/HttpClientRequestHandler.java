@@ -53,8 +53,20 @@ public class HttpClientRequestHandler implements RequestHandler {
         //请求前过滤器处理
         RequestFilterChain.beforeHandler(request);
 
-        //执行HTTP请求
+        //自定义线程池执行HTTP请求
+        //Future<org.apache.http.HttpResponse> future = MyThreadPool.getExecutePool().submit(() -> executor(request, serverUrl));
+        //org.apache.http.HttpResponse httpResponse;
+        //try {
+        //这里获取返回值还是阻塞了
+        //    httpResponse = future.get(10, TimeUnit.SECONDS);
+        //} catch (Exception e) {
+        //    log.error("ERROR={}", e);
+        //    return;
+        //}
+
+        //当前线程执行HTTP请求
         org.apache.http.HttpResponse httpResponse = executor(request, serverUrl);
+
         FullHttpResponse response = convertResponse(ctx, httpResponse);
 
         //请求后过滤器处理
@@ -72,7 +84,6 @@ public class HttpClientRequestHandler implements RequestHandler {
         Map<String, String> headers = headerConvert(fullHttpRequest);
         //当前请求方法
         String method = fullHttpRequest.method().name();
-//        MyThreadPool.getExecutePool().execute(() -> {
         org.apache.http.HttpResponse httpResponse;
         try {
             switch (method) {
@@ -109,7 +120,6 @@ public class HttpClientRequestHandler implements RequestHandler {
             ));
         }
         return httpResponse;
-//        });
     }
 
     /**

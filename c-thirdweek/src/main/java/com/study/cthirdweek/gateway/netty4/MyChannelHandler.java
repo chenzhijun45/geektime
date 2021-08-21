@@ -2,7 +2,7 @@ package com.study.cthirdweek.gateway.netty4;
 
 import com.study.cthirdweek.gateway.httprequesthandler.HttpClientRequestHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,15 +10,14 @@ import org.slf4j.LoggerFactory;
 /**
  * 自定义channelHandler处理器，需要实现ChannelInboundHandlerAdapter类，才能被netty关联
  */
-public class MyChannelHandler extends ChannelInboundHandlerAdapter {
+public class MyChannelHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final Logger log = LoggerFactory.getLogger(MyChannelHandler.class);
 
     /**
      * 接收到客户端消息会调用此方法
      */
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        FullHttpRequest httpRequest = (FullHttpRequest) msg;
+    public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         //处理请求
         HttpClientRequestHandler.getInstance().handler(httpRequest, ctx);
         ctx.close();

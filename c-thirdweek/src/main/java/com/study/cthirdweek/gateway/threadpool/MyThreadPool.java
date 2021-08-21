@@ -14,11 +14,11 @@ public class MyThreadPool {
     }
 
     private static class InnerClass {
-        private static ExecutorService executeThreadPool = executeThreadPool();
+        private static ThreadPoolExecutor executeThreadPool = executeThreadPool();
         private static ExecutorService callBackThreadPool = callBackThreadPool();
     }
 
-    public static ExecutorService getExecutePool() {
+    public static ThreadPoolExecutor getExecutePool() {
         return InnerClass.executeThreadPool;
     }
 
@@ -29,7 +29,7 @@ public class MyThreadPool {
     /**
      * 执行HTTP请求线程池
      */
-    private static ExecutorService executeThreadPool() {
+    private static ThreadPoolExecutor executeThreadPool() {
         //Executors创建的四种线程池 本质上都是new ThreadPoolExecutor() 无非7个参数设置不一样 ScheduledThreadPoolExecutor稍微特殊一点
         return new ThreadPoolExecutor(
                 cores * 2,//核心线程数 网关更偏向于io密集型，所以设置大一点

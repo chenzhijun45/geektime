@@ -22,9 +22,6 @@ public class RoundRobinRouter implements Router {
                 position++;
             }
         }
-
-        System.out.println("router=" + router);
-
         return router;
     }
 
