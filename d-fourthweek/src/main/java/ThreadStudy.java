@@ -2,6 +2,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -149,6 +150,28 @@ public class ThreadStudy {
             reentrantLock.unlock();
             System.out.println("lock实现 执行异常 e=" + e.getMessage());
         }
+
+        System.out.println("===============lock02实现===============");
+        AtomicReference<Integer> result3 = new AtomicReference<>();
+        Lock reentrantLock2 = new ReentrantLock();
+        Condition condition = reentrantLock2.newCondition();
+
+        reentrantLock2.lock();
+        new Thread(() -> {
+            result3.set(fiBo(a));
+            reentrantLock2.lock();
+            condition.signal();
+            reentrantLock2.unlock();
+        }).start();
+
+        try {
+            condition.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            reentrantLock2.unlock();
+        }
+        System.out.println("reentrantLock condition实现 执行结果=" + result3.get());
 
         System.out.println("===============countDownLatch实现===============");
         System.out.println("执行结果=" + countDownLatchComplete());
