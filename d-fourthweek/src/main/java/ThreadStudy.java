@@ -2,6 +2,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 目标：多种方法实现获取其他线程执行结果后，再继续执行主线程
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * 3.通过join实现
  * 4.线程池的submit方法，分别对应不同的传参：传入 Callable 或者传入 Runnable 和 result
  * 5.通过interrupt实现，主线程调用wait或者sleep进行无限期中断状态，新建线程执行完计算任务，调用interrupt方法打断主线程的中断状态，完成
+ * 6.synchronized关键字实现
+ * 7.lock实现
  * <p>
  * 简单总结：感觉无非就是写法上的差异，无论是线程池还是直接new Thread，都是要等待线程A执行完成，再执行线程B。
  * 本质上都是通过join wait notify interrupt之间的配合实现，或者直接死循环等待，这种浪费资源。
@@ -104,6 +108,48 @@ public class ThreadStudy {
         //}
         System.out.println("执行结果=" + reference2.get());
         System.out.println("使用时间：" + (System.currentTimeMillis() - start) + " ms");
+
+        System.out.println("===============synchronized实现===============");
+        AtomicReference<Integer> result = new AtomicReference<>();
+        Object obj = new Object();
+        synchronized (obj) {
+            new Thread(() -> {
+                result.set(fiBo(a));
+            }).start();
+        }
+        synchronized (obj) {
+            System.out.println("synchronized实现 执行结果=" + reference.get());
+        }
+
+        System.out.println("===============lock实现===============");
+        AtomicReference<Integer> result2 = new AtomicReference<>();
+        Lock reentrantLock = new ReentrantLock();
+        new Thread(() -> {
+            reentrantLock.lock();
+            try {
+                result2.set(fiBo(a));
+            } finally {
+                reentrantLock.unlock();
+            }
+        }).start();
+
+        try {
+            //主线程休息一下 确保计算线程先拿到锁
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            boolean b = reentrantLock.tryLock(Long.MAX_VALUE, TimeUnit.SECONDS);
+            if (b) {
+                System.out.println("reentrantLock实现 执行结果=" + result2.get());
+            }
+        } catch (InterruptedException e) {
+            reentrantLock.unlock();
+            System.out.println("lock实现 执行异常 e=" + e.getMessage());
+        }
+
         System.out.println("===============countDownLatch实现===============");
         System.out.println("执行结果=" + countDownLatchComplete());
         System.out.println("===============wait/notify实现===============");
