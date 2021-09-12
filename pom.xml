@@ -29,6 +29,7 @@
         <module>b-secondweek</module>
         <module>c-thirdweek</module>
         <module>d-fourthweek</module>
+        <module>f-sixthweek</module>
     </modules>
 
     <dependencyManagement>
