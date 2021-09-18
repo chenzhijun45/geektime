@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dynamicdatasource.mapper.UserMapper">
+    
+    <resultMap type="com.example.dynamicdatasource.model.User" id="User">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+    </resultMap>
+
+    <select id="queryTest" resultMap="User">
+        SELECT * FROM t_user;
+    </select>
+
+</mapper>

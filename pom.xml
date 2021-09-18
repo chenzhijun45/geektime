@@ -30,6 +30,8 @@
         <module>c-thirdweek</module>
         <module>d-fourthweek</module>
         <module>f-sixthweek</module>
+        <module>g-seventhweek</module>
+        <module>insertdatas</module>
     </modules>
 
     <dependencyManagement>
