@@ -1,5 +1,7 @@
 package com.study.week8.dao.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ public class OrderDetail implements Serializable {
     private static final long serialVersionUID = -3797518689557855784L;
 
     //主键id
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     //订单id
@@ -43,10 +46,10 @@ public class OrderDetail implements Serializable {
     private BigDecimal marketPrice;
 
     //sku价格
-    private Long skuPrice;
+    private BigDecimal skuPrice;
 
     //sku总价
-    private Long skuPriceTotal;
+    private BigDecimal skuPriceTotal;
 
     //是否删除(0否 1是)
     private Integer isDel;

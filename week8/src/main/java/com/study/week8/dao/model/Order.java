@@ -1,6 +1,9 @@
 package com.study.week8.dao.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,6 +16,7 @@ public class Order implements Serializable {
     private static final long serialVersionUID = -7529845870419129488L;
 
     //主键id
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     //订单id
@@ -38,6 +42,9 @@ public class Order implements Serializable {
 
     //实际订单金额
     private BigDecimal actualAmount;
+
+    //商品总数量
+    private Integer goodsNum;
 
     //收货人
     private String receiver;
