@@ -23,7 +23,6 @@ public class RpcFxInvoker {
         String serviceClass = request.getServiceClass();
 
         // 作业1：改成泛型和反射
-        //根据全类名获取目标对象
         Object service = resolver.resolve(serviceClass);//this.applicationContext.getBean(serviceClass);
 
         try {
