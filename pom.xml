@@ -31,6 +31,7 @@
         <module>d-fourthweek</module>
         <module>f-sixthweek</module>
         <module>g-seventhweek</module>
+        <module>week9</module>
     </modules>
 
     <dependencyManagement>
