@@ -1,0 +1,26 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    driver-class-name:  com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/account?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: root
+
+mybatis:
+  type-aliases-package: com.example.dubbocommon.account.entity.Account
+  config-location: classpath:mybatis/mybatis-config.xml
+
+logging:
+  level:
+    root: error
+    org.springframework.web: info
+    org.apache.ibatis: debug
+    org.dromara.hmily.tac: debug
+    org.dromara.hmily.demo.bonuspoint: debug
+    org.dromara.hmily.demo.lottery: debug
+    org.dromara.hmily.demo: debug
+  path: "D:/study/geek/study/week9/hmily-dubbo-tcc/dubbo-account/logs"
+
+
