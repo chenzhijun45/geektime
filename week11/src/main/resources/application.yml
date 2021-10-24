@@ -1,0 +1,4 @@
+spring:
+  redis:
+    # \u6211\u7684redis\u5BC6\u7801\u4E3A123456 \u65E0\u5BC6\u7801\u5219\u65E0\u9700\u914D\u7F6E
+    password: 123456
